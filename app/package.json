@@ -1,0 +1,15 @@
+{
+  "name": "hansdic",
+  "productName": "Dictionary",
+  "identifier": "Hasn Dic",
+  "description": "dictionary that inspiration from allkdic",
+  "version": "0.1.0",
+  "author": "incleaf",
+  "main": "background.js",
+  "config": {
+    "target": "development"
+  },
+  "dependencies": {
+    "fs-jetpack": "^0.7.0"
+  }
+}

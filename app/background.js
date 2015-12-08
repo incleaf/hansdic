@@ -1,48 +1,58 @@
-// This is main process of Electron, started as first thing when your
-// app starts. This script is running through entire life of your application.
-// It doesn't have any windows which you can see on screen, but we can open
-// window from here.
 
-var electron = require('electron');
-var app = electron.app;
-var BrowserWindow = electron.BrowserWindow;
 var env = require('./vendor/electron_boilerplate/env_config');
 var devHelper = require('./vendor/electron_boilerplate/dev_helper');
 var windowStateKeeper = require('./vendor/electron_boilerplate/window_state');
 var hansdic = require('./hansdic/main');
+var os = /^win/.test(process.platform) ? "WINDOWS" : "OSX";
+var electron = require('electron');
+
+var Tray = electron.Tray;
+var Menu = electron.Menu;
+var BrowserWindow = electron.BrowserWindow;
+var app = electron.app;
 
 var mainWindow;
+var appIcon = null;
 
 // Preserver of the window size and position between app launches.
 var mainWindowState = windowStateKeeper('main', {
-    width: 300,
+    width: 400,
     height: 600
 });
 
-app.dock.hide(); // hide dock in OS X
+if(os === "OSX") {
+    app.dock.hide(); // hide dock in OS X
+}
 
 app.on('ready', function () {
-    var electronScreen = electron.screen;
 
+
+    var screen = electron.screen.getPrimaryDisplay().workAreaSize;
     mainWindow = new BrowserWindow({
-        x: electronScreen.width - mainWindowState.width,
-        y: electronScreen.height - mainWindowState.height,
+        x: screen.width - mainWindowState.width,
+        y: screen.height - mainWindowState.height,
         width: mainWindowState.width,
         height: mainWindowState.height,
         autoHideMenuBar: true,
         alwaysOnTop: true,
-        frame: true
+        frame: true,
+        title: "HasnDic"
     });
 
-    if (mainWindowState.isMaximized) {
-        mainWindow.maximize();
-    }
+    var tr = new Tray("resources/dic.png");
 
-    mainWindow.on('close', function () {
+    mainWindow.on('close', function(e) {
         mainWindowState.saveState(mainWindow);
+        if(os === "WINDOWS") {
+            e.preventDefault();
+            mainWindow.hide();
+            return false;
+        }
+    }).on('page-title-updated', function(e){
+        e.preventDefault();
     });
 
-    var dic = hansdic(electron, app, mainWindow);
+    var dic = hansdic(mainWindow);
     dic.init();
 });
 

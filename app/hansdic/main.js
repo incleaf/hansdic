@@ -3,9 +3,7 @@
 var init = require('./init');
 var shortcut = require('./shortcut');
 
-module.exports = function (electron, app, mainWindow) {
-    var electron = electron;
-    var app = app;
+module.exports = function (mainWindow) {
     var mainWindow = mainWindow;
 
     return {
